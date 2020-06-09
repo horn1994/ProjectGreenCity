@@ -1,0 +1,14 @@
+geopandas
+pandas
+geojson
+folium
+shapely
+simpledbf
+dash
+flask
+requests
+gunicorn
+datetime
+
+
+
