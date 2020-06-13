@@ -25,80 +25,6 @@ gdf_erdopoint.rename(columns = {'Kerület': 'kerulet'}, inplace = True)
 #gdf_zold.drop('Unnamed: 0', axis = 1, inplace = True)
 gdf_all = gdf_zold.append(gdf_erdopoint)
 
-
-# def create_data(gdf_all):
-#     start_date = date.fromisoformat("2020-06-06")  # this is the day of the first data
-#     today = date.today()
-#     day_since_start = (today - start_date).days
-#     new_data = pd.read_excel(
-#         r"C:\Users\T440s\Google Drive\rajk\rajkos_kurzusok\prog2\PROJECT\data\test\test{}.xlsx".format(
-#             day_since_start
-#         )
-#     )
-#     gdf_combined = pd.merge(gdf_all, new_data, on=["Nev", "kerulet"], how="outer")
-#     gdf_combined["mean_visitors"] = gdf_combined.iloc[:, 10:].mean(axis=1).round(0)
-#     # gdf_combined["mean_visitors"] = gdf_combined["mean_visitors"]
-#     gdf_combined_filtered = (
-#         gdf_combined.set_index("Nev")
-#         .iloc[:, 10:-1]
-#         .rename(lambda x: str(x) + " óra", axis=1)
-#         .T
-#     )
-
-#     return gdf_combined, gdf_combined_filtered
-
-
-# gdf_combined, gdf_combined_filtered = create_data(gdf_all)
-
-# ## TRY EXCEPTET MEGCSINÁLNI, HOGY 30 NAPNYI AVERAGE LEGYEN
-# def create_agg_data(gdf_all):
-#     start_date = date.fromisoformat("2020-06-06")  # this is the day of the first data
-#     today = date.today()
-#     day_since_start = (today - start_date).days
-#     new_data = pd.read_excel(
-#         r"C:\Users\T440s\Google Drive\rajk\rajkos_kurzusok\prog2\PROJECT\data\test\test{}.xlsx".format(
-#             day_since_start
-#         )
-#     )
-#     gdf_aggregated = new_data.iloc[:, 4:]
-#     for data in range(1, day_since_start):
-#         read_new = pd.read_excel(
-#             r"C:\Users\T440s\Google Drive\rajk\rajkos_kurzusok\prog2\PROJECT\data\test\test{}.xlsx".format(
-#                 data
-#             )
-#         )
-#         gdf_aggregated += round(read_new.iloc[:, 4:])
-
-#     gdf_aggregated = round(gdf_aggregated / day_since_start)
-#     gdf_aggregated = pd.concat(
-#         [
-#             new_data.iloc[:, :4].reset_index(drop=True),
-#             gdf_aggregated.reset_index(drop=True),
-#         ],
-#         axis=1,
-#     )
-#     gdf_combined_aggregated = pd.merge(
-#         gdf_all, gdf_aggregated, on=["Nev", "kerulet"], how="outer"
-#     )
-#     gdf_combined_aggregated["mean_visitors"] = (
-#         gdf_combined_aggregated.iloc[:, 10:].mean(axis=1).round(0)
-#     )
-#     gdf_combined_aggregated_filtered = (
-#         gdf_combined_aggregated.set_index("Nev")
-#         .iloc[:, 10:-1]
-#         .rename(lambda x: str(x) + " óra", axis=1)
-#         .T
-#     )
-#     return gdf_aggregated, gdf_combined_aggregated_filtered
-
-
-# gdf_aggregated, gdf_combined_aggregated_filtered = create_agg_data(gdf_all)
-
-
-
-from datetime import date
-
-
 def create_data(gdf_all):
     
     start_date = date.fromisoformat("2020-06-05")  # this is the day of the first data
@@ -189,3 +115,39 @@ def create_agg_data(gdf_all):
 
 
 gdf_aggregated,gdf_combined_aggregated, gdf_combined_aggregated_filtered = create_agg_data(gdf_all)
+
+def figure2():
+    start_date = date.fromisoformat("2020-06-05")  # this is the day of the first data
+    today = date.today()
+    day_since_start = (today - start_date).days
+    avg_visitors = []
+    load = False
+    while load == False:
+        try:
+            mean_visitors = pd.read_excel(
+                r"C:\Users\T440s\Google Drive\rajk\rajkos_kurzusok\prog2\PROJECT\data\test\test{}.xlsx".format(
+                    day_since_start
+                )
+            )
+            mean_visitors['{}. nap'.format(day_since_start)] = mean_visitors.iloc[:,4:].mean(axis=1).round(0)
+            mean_visitors = mean_visitors.set_index('Nev').iloc[:,-1:]
+            load = True
+        except FileNotFoundError:
+            day_since_start -= 1
+    for data in range(day_since_start-7, day_since_start): 
+        try:
+            read_new = pd.read_excel(
+                r"C:\Users\T440s\Google Drive\rajk\rajkos_kurzusok\prog2\PROJECT\data\test\test{}.xlsx".format(
+                    data
+                )
+            )
+            read_new['{}. nap'.format(data)] = read_new.iloc[:,4:].mean(axis=1).round(0)
+            read_new = read_new.set_index('Nev').iloc[:,-1:]
+            mean_visitors = mean_visitors.merge(read_new, right_index=True, left_index=True)
+            
+        except FileNotFoundError:
+            pass
+    mean_visitors = mean_visitors.T.sort_index()
+    return mean_visitors
+
+mean_visitors = figure2()
