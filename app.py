@@ -3,6 +3,7 @@ import dash_html_components as html
 from flask import Flask
 import geopandas
 import pandas as pd
+import numpy as np
 import folium
 
 import dash_core_components as dcc
@@ -23,6 +24,8 @@ from data_processing import (
     gdf_combined_aggregated,
     gdf_combined_aggregated_filtered,
     mean_visitors,
+    gdf_combined_aggregated_adjusted,
+    gdf_combined_aggregated_adjusted_trans,
 )
 
 maps = folium.Map(
@@ -134,10 +137,40 @@ figure2.update_layout(
     plot_bgcolor="rgba(0,0,0,0)",
     legend=dict(x=0, y=1,),
 )
+
+figure3 = go.Figure(
+    data=[
+        go.Bar(
+            name="Látógatók sűrűsége a park négyzetméretéhez képest",
+            x=gdf_combined_aggregated_adjusted["Nev"],
+            y=gdf_combined_aggregated_adjusted["weighted_visitors"],
+            marker_color="darkgreen",
+        )
+        
+    ]
+)
+
+figure3.update_layout(
+    title={
+        "text": "Látógatók sűrűsége a park négyzetméretéhez képest",
+        "y": 1,
+        "x": 0.5,
+        "xanchor": "center",
+    },
+    xaxis_title="",
+    yaxis_title="Sűrűság",
+    font=dict(
+        # family="Courier New, monospace",
+        size=12,
+        # color="#7f7f7f"
+    ),
+    plot_bgcolor="rgba(0,0,0,0)",
+    legend=dict(x=0, y=1),
+)
+
 # create APP
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
 
 app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
     children=[
@@ -205,29 +238,61 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                 ),
             ],
         ),
-    ]
-)
+        dcc.Dropdown(
+            id="zolterulet_name",
+            options=[{"label": e, "value": e} for e in gdf_combined_aggregated_adjusted["Nev"].unique()],
+            placeholder="Válassz egy parkot",
+        ),
+        html.Div(
+             className="row",
+             children=[
+                html.Div(
+                    className="twlve columns",
+                    children=[
+                        dcc.Graph(
+                            id="plot3",
+                            figure=figure3,
+                            style={
+                                "marginLeft": 0,
+                                "marginRight": 0,
+                                "marginTop": 10,
+                                "marginBottom": 10,
+                                "width": 800,
+                                "height": 600,
+                    },
+                        ),
+                    ],
+                ),
+            ],
+            ),
+        ],
+        )
+
+
 
 
 @app.callback(
-    [Output("map", "srcDoc"), Output("plot2", "figure"), Output("plot1", "figure")],
-    [Input("park_name", "value")],
+    [Output("map", "srcDoc"), Output("plot2", "figure"), Output("plot1", "figure"), Output("plot3", "figure")],
+    [Input("park_name", "value"), Input("zolterulet_name", "value")],
 )
-def update_map(value):
+
+def update_map(value, value2):
     if (value is None) or (value == "Válassz egy parkot"):
         bp_map = maps.get_root().render()
+        gdf_combined_aggregated_filtered['Average'] = gdf_combined_aggregated_filtered.mean(axis = 1)
+        gdf_combined_filtered['Average'] = gdf_combined_filtered.mean(axis = 1)
         figure1 = go.Figure(
             data=[
                 go.Bar(
                     name="Átlagos heti látogatószám",
-                    x=gdf_combined_aggregated_filtered["Vérmezõ"].index,
-                    y=gdf_combined_aggregated_filtered["Vérmezõ"],
+                    x=gdf_combined_aggregated_filtered["Average"].index,
+                    y=gdf_combined_aggregated_filtered["Average"],
                     marker_color="darkblue",
                 ),
                 go.Bar(
                     name="Előző napi látogató szám",
-                    x=gdf_combined_filtered["Vérmezõ"].index,
-                    y=gdf_combined_filtered["Vérmezõ"],
+                    x=gdf_combined_filtered["Average"].index,
+                    y=gdf_combined_filtered["Average"],
                     marker_color="darkgreen",
                 ),
             ]
@@ -241,7 +306,7 @@ def update_map(value):
                 "xanchor": "center",
             },
             xaxis_title="Óránkénti látogatószám",
-            yaxis_title="Vérmezõ",
+            yaxis_title="Összes terület átlaga",
             font=dict(
                 # family="Courier New, monospace",
                 size=12,
@@ -250,12 +315,13 @@ def update_map(value):
             plot_bgcolor="rgba(0,0,0,0)",
             legend=dict(x=0, y=1),
         )
+        mean_visitors['Average'] = mean_visitors.mean(axis = 1)
         figure2 = go.Figure(
             data=[
                 go.Scatter(
                     name="Átlagos heti látogatószám",
-                    x=mean_visitors["Vérmezõ"].index,
-                    y=mean_visitors["Vérmezõ"],
+                    x=mean_visitors["Average"].index,
+                    y=mean_visitors["Average"],
                     marker_color="darkblue",
                 ),
             ]
@@ -268,7 +334,7 @@ def update_map(value):
                 "xanchor": "center",
             },
             xaxis_title="Átlagos látogatószám",
-            yaxis_title="Vérmezõ",
+            yaxis_title="Összes terület átlaga",
             font=dict(
                 # family="Courier New, monospace",
                 size=12,
@@ -277,7 +343,7 @@ def update_map(value):
             plot_bgcolor="rgba(0,0,0,0)",
             legend=dict(x=0, y=1,),
         )
-        return bp_map, figure1, figure2
+
     else:
         bp_map = folium.Map(
             location=[
@@ -362,7 +428,75 @@ def update_map(value):
             plot_bgcolor="rgba(0,0,0,0)",
             legend=dict(x=0, y=1,),
         )
-        return bp_map, figure1, figure2
+    if (value2 is None) or (value2 == "Válassz egy parkot"):
+        figure3 = go.Figure(
+            data=[
+                go.Bar(
+                    name="Látógatók sűrűsége a park négyzetméretéhez képest",
+                    x=gdf_combined_aggregated_adjusted["Nev"],
+                    y=gdf_combined_aggregated_adjusted["weighted_visitors"],
+                    marker_color="darkgreen",
+                )]
+        )
+
+        figure3.update_layout(
+            title={
+                "text": "Látógatók sűrűsége a park négyzetméretéhez képest",
+                "y": 1,
+                "x": 0.5,
+                "xanchor": "center",
+            },
+            xaxis_title="",
+            yaxis_title="Sűrűság",
+            font=dict(
+                # family="Courier New, monospace",
+                size=12,
+                # color="#7f7f7f"
+            ),
+            plot_bgcolor="rgba(0,0,0,0)",
+            legend=dict(x=0, y=1),
+        )
+
+        
+    else:
+        
+        ind = np.where(gdf_combined_aggregated_adjusted["Nev"].values == value2)[0][0]
+        indexer = slice(max(0, ind - 10), ind + 10)
+        filt_df = gdf_combined_aggregated_adjusted.iloc[indexer, :]
+        
+        figure3 = go.Figure(
+            data=[
+                go.Bar(
+                    name="Látógatók sűrűsége a park négyzetméretéhez képest",
+                    x=filt_df["Nev"],
+                    y=filt_df["weighted_visitors"],
+                    marker_color="darkgreen",
+                )]
+        )
+
+        figure3.update_layout(
+            title={
+                "text": "Látógatók sűrűsége a park négyzetméretéhez képest",
+                "y": 1,
+                "x": 0.5,
+                "xanchor": "center",
+            },
+            xaxis_title="",
+            yaxis_title="Sűrűség",
+            font=dict(
+                # family="Courier New, monospace",
+                size=12,
+                # color="#7f7f7f"
+            ),
+            plot_bgcolor="rgba(0,0,0,0)",
+            legend=dict(x=0, y=1),
+        )
+        
+       
+    return bp_map, figure1, figure2, figure3
+
+
+
 
 
 server = app.server

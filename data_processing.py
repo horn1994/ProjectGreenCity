@@ -11,7 +11,6 @@ import io
 import os
 
 
-#token = ".."
 token = os.environ.get('TOKEN')
 DBX = dropbox.Dropbox(token)
 #Zoldteruletek
@@ -178,3 +177,16 @@ def figure2():
     return mean_visitors
 
 mean_visitors = figure2()
+
+def mean_adjusted(gdf_combined_aggregated):
+    gdf_combined_aggregated_adjusted = (
+        gdf_combined_aggregated.loc[gdf_combined_aggregated["tipus"] == "Zöldterület"].set_index("Nev").iloc[:,-2:]
+    )
+    return gdf_combined_aggregated_adjusted
+
+gdf_combined_aggregated_adjusted = mean_adjusted(gdf_combined_aggregated)
+
+gdf_combined_aggregated_adjusted = gdf_combined_aggregated_adjusted.sort_values('weighted_visitors', ascending=False)
+
+gdf_combined_aggregated_adjusted_trans = gdf_combined_aggregated_adjusted.T
+gdf_combined_aggregated_adjusted = gdf_combined_aggregated_adjusted.reset_index()
