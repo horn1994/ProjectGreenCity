@@ -213,7 +213,7 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                                 "marginRight": 0,
                                 "marginTop": 10,
                                 "marginBottom": 10,
-                                #"width": 800,
+                                "width": 800,
                                 "height": 600,
                             },
                         ),
@@ -230,7 +230,7 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                                 "marginRight": 0,
                                 "marginTop": 10,
                                 "marginBottom": 10,
-                                #"width": 800,
+                                "width": 800,
                                 "height": 600,
                             },
                         ),
@@ -244,23 +244,29 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
             placeholder="Válassz egy parkot",
         ),
         html.Div(
+             className="row",
              children=[
-                    dcc.Graph(
-                        id="plot3",
-                        figure=figure3,
-                        style={
-                            "marginLeft": 0,
-                            "marginRight": 0,
-                            "marginTop": 20,
-                            "marginBottom": 10,
-                            #"width": 800,
-                            "height": 600,
+                html.Div(
+                    className="twlve columns",
+                    children=[
+                        dcc.Graph(
+                            id="plot3",
+                            figure=figure3,
+                            style={
+                                "marginLeft": 0,
+                                "marginRight": 0,
+                                "marginTop": 10,
+                                "marginBottom": 10,
+                                "width": 800,
+                                "height": 600,
                     },
                         ),
                     ],
                 ),
             ],
             ),
+        ],
+        )
 
 
 
@@ -495,4 +501,4 @@ def update_map(value, value2):
 
 server = app.server
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)
