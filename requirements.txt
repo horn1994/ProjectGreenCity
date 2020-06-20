@@ -10,6 +10,5 @@ requests
 gunicorn
 datetime
 dropbox
-os
 
 
