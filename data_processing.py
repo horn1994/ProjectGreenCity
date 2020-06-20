@@ -71,7 +71,7 @@ def create_data(gdf_all):
     # gdf_combined["mean_visitors"] = gdf_combined["mean_visitors"]
     gdf_combined_filtered = (
         gdf_combined.set_index("Nev")
-        .iloc[:, 10:-1]
+        .iloc[:, 8:-1]
         .rename(lambda x: str(x) + " óra", axis=1)
         .T
     )
