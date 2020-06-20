@@ -10,7 +10,7 @@ import dropbox
 import io
 
 
-token = "tMyiUS6n5NAAAAAAAAAADHpC4VE5Etu-fs3_EBIQDOikg6c6KR8RwF_QTWgMsjYY"
+token = "tMyiUS6n5NAAAAAAAAAAEFmrrPgBSN3aD2lIKWiAOJm-czrO71N5D0XwIPCRJkrD"
 DBX = dropbox.Dropbox(token)
 #Zoldteruletek
 _, res = DBX.files_download("/polygons/zoldter_pg_region.csv")
