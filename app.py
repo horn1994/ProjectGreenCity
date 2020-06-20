@@ -44,8 +44,8 @@ style_function_erdo = lambda x: {
 }
 
 tooltip_zold = folium.GeoJsonTooltip(
-    fields=["Nev", "kerulet", "tipus", "mean_visitors"],
-    aliases=["Név:", "Kerület:", "Típus:", "Átlagos látogatószám (heti):"],
+    fields=["Nev", "kerulet", "tipus", "mean_visitors", "weighted_visitors"],
+    aliases=["Név:", "Kerület:", "Típus:", "Átlagos látogatószám (heti):", "Látogató/négyzetméter (heti):"],
     localize=True,
 )
 

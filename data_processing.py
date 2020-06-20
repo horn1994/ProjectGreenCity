@@ -128,9 +128,13 @@ def create_agg_data(gdf_all):
     gdf_combined_aggregated["mean_visitors"] = (
         gdf_combined_aggregated.iloc[:, 8:].mean(axis=1).round(0)
     )
+    gdf_combined_aggregated["weighted_visitors"] = (
+    gdf_combined_aggregated["mean_visitors"] / gdf_combined_aggregated["Terulet_x"]
+    )
+
     gdf_combined_aggregated_filtered = (
         gdf_combined_aggregated.set_index("Nev")
-        .iloc[:, 8:-1]
+        .iloc[:, 8:-2]
         .rename(lambda x: str(x) + " óra", axis=1)
         .T
     )
