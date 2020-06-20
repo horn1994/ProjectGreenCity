@@ -126,7 +126,7 @@ def create_agg_data(gdf_all):
         gdf_all, gdf_aggregated, on=["Nev", "kerulet"], how="outer"
     )
     gdf_combined_aggregated["mean_visitors"] = (
-        gdf_combined_aggregated.iloc[:, 11:].mean(axis=1).round(0)
+        gdf_combined_aggregated.iloc[:, 8:].mean(axis=1).round(0)
     )
     gdf_combined_aggregated_filtered = (
         gdf_combined_aggregated.set_index("Nev")
