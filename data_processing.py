@@ -8,9 +8,11 @@ from shapely import wkt
 from datetime import date
 import dropbox
 import io
+import os
 
 
-token = "tMyiUS6n5NAAAAAAAAAAEFmrrPgBSN3aD2lIKWiAOJm-czrO71N5D0XwIPCRJkrD"
+#token = ".."
+token = os.environ.get('TOKEN')
 DBX = dropbox.Dropbox(token)
 #Zoldteruletek
 _, res = DBX.files_download("/polygons/zoldter_pg_region.csv")
