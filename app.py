@@ -213,7 +213,7 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                                 "marginRight": 0,
                                 "marginTop": 10,
                                 "marginBottom": 10,
-                                "width": 800,
+                                #"width": 800,
                                 "height": 600,
                             },
                         ),
@@ -230,7 +230,7 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                                 "marginRight": 0,
                                 "marginTop": 10,
                                 "marginBottom": 10,
-                                "width": 800,
+                                #"width": 800,
                                 "height": 600,
                             },
                         ),
@@ -244,10 +244,6 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
             placeholder="Válassz egy parkot",
         ),
         html.Div(
-             className="row",
-             children=[
-                html.Div(
-                    className="twlve columns",
                     children=[
                         dcc.Graph(
                             id="plot3",
@@ -255,17 +251,16 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                             style={
                                 "marginLeft": 0,
                                 "marginRight": 0,
-                                "marginTop": 10,
+                                "marginTop": 20,
                                 "marginBottom": 10,
-                                "width": 800,
                                 "height": 600,
-                    },
+
+                           
+                            },
+                                ),
+                            ],
                         ),
-                    ],
-                ),
-            ],
-            ),
-        ],
+                ],
         )
 
 
