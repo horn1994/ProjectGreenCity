@@ -244,6 +244,10 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
             placeholder="Válassz egy parkot",
         ),
         html.Div(
+             className="row",
+             children=[
+                html.Div(
+                    className="twelve columns",
                     children=[
                         dcc.Graph(
                             id="plot3",
@@ -251,16 +255,17 @@ app.layout = html.Div(  # style = {'backgroundColor': 'grey'},
                             style={
                                 "marginLeft": 0,
                                 "marginRight": 0,
-                                "marginTop": 20,
+                                "marginTop": 10,
                                 "marginBottom": 10,
+                                #"width": 800,
                                 "height": 600,
-
-                           
-                            },
-                                ),
-                            ],
+                    },
                         ),
-                ],
+                    ],
+                ),
+            ],
+            ),
+        ],
         )
 
 
